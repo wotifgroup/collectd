@@ -304,7 +304,6 @@ class GenericJMXConfValue
     String[] attrNameArray;
 
     attrNameList = new ArrayList<String> ();
-
     attrNameArray = attrName.split ("\\.");
     key = attrNameArray[0];
     for (int i = 1; i < attrNameArray.length; i++)
@@ -314,11 +313,19 @@ class GenericJMXConfValue
     {
       try
       {
-        value = conn.getAttribute (objName, key);
+        value = conn.getAttribute (objName, attrName);
+        return value;
       }
-      catch (javax.management.AttributeNotFoundException e)
+      catch (javax.management.AttributeNotFoundException e1)
       {
-        value = conn.invoke (objName, key, /* args = */ null, /* types = */ null);
+        try
+        {
+          value = conn.getAttribute (objName, attrName);
+        }
+        catch (javax.management.AttributeNotFoundException e2)
+        {
+          value = conn.invoke (objName, key, /* args = */ null, /* types = */ null);
+        }
       }
     }
     catch (Exception e)
